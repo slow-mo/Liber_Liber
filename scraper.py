@@ -1,3 +1,4 @@
+# coding: utf-8
 import scraperwiki, lxml.html, cssselect
 import re
 
@@ -92,7 +93,7 @@ def parse_scheda_opera(book_id, author_id, url):
            ]
     
     for i in headers:
-        for j in root.cssselect('div.ll_metadati_etichetta:contains("' + i + ':")'):
+        for j in root.cssselect('div.ll_metadati_etichetta:contains("' + i.encode('utf-8') + ':")'):
             if j.text_content() == 'soggetto BISAC:':
                 for l in filter(None, re.split('([A-Z, ]+ / .*?[a-z](?=[A-Z]))', j.getnext().text_content())):
                     make_bisac(book_id, l)
