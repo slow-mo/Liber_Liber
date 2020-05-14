@@ -69,31 +69,31 @@ def parse_scheda_opera(book_id, author_id, url):
     #completa tabella opere
     record = {'id' : book_id, 'autore_id' : author_id, 'url' : url}
     # autore non lo prendiamo, è negli argomenti
-    headers = ['titolo',
-            'sottotitolo',
-            'titolo per ordinamento',
-            'descrizione breve',
-            'opera di riferimento',
-            'licenza',
-            'cura',
-            'data pubblicazione',
-            'opera elenco',
-            'ISBN',
-            'soggetto BISAC',
-            'affidabilità',
-            'impaginazione',
-            'pubblicazione',
-            'revisione',
-            'traduzione',
-            'album',
-            'artista',
-            'etichetta',
-            'genere',
-            'tipo registrazione',
+    headers = [u'titolo',
+            u'sottotitolo',
+            u'titolo per ordinamento',
+            u'descrizione breve',
+            u'opera di riferimento',
+            u'licenza',
+            u'cura',
+            u'data pubblicazione',
+            u'opera elenco',
+            u'ISBN',
+            u'soggetto BISAC',
+            u'affidabilità',
+            u'impaginazione',
+            u'pubblicazione',
+            u'revisione',
+            u'traduzione',
+            u'album',
+            u'artista',
+            u'etichetta',
+            u'genere',
+            u'tipo registrazione',
            ]
     
     for i in headers:
-        for j in root.cssselect('div.ll_metadati_etichetta:contains("' + i.encode('utf-8') + ':")'):
+        for j in root.cssselect(u'div.ll_metadati_etichetta:contains("' + i + u':")'):
             if j.text_content() == 'soggetto BISAC:':
                 for l in filter(None, re.split('([A-Z, ]+ / .*?[a-z](?=[A-Z]))', j.getnext().text_content())):
                     make_bisac(book_id, l)
