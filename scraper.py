@@ -144,7 +144,7 @@ def build_file():
         WHERE "titolo per ordinamento" IS NULL OR "titolo per ordinamento" = ""')
     for i in books: parse_scheda_opera(i['id'], i['autore_id'], i['url'])
 
-#build_autori('#AB')
-#build_opere()
+build_autori('CDEFGHIJKLMNOPQRSTUVWXYZ')
+build_opere()
 build_file()
 
