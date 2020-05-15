@@ -22,7 +22,6 @@ def parse_scheda_autore(author_id, url):
     html = scraperwiki.scrape(url, None, user_agent)
     root = lxml.html.fromstring(html)
       
-    # lista opere
     anchors = root.cssselect('span.ll_autore_elenco_opera_titolo a')
     for idx, item in enumerate(anchors):
         record = {
@@ -34,7 +33,6 @@ def parse_scheda_autore(author_id, url):
             }
         scraperwiki.sqlite.save(unique_keys=['id'], data=record, table_name='opere')
 
-   # completa dati in tabella autori - si fa dopo per la ripresa se si interrompe sulla lista opere
     record = {'id' : author_id, 'url' : url}
     headers = ['autore', 'ordinamento', 'elenco']
     for item in headers:
@@ -56,7 +54,6 @@ def parse_scheda_opera(book_id, author_id, url):
             }
         scraperwiki.sqlite.save(unique_keys=['id'], data=record, table_name='file')
  
-    # File audio 
     for idx, item in enumerate(root.cssselect('ul.ll_musica_elenco_mp3 li a, ul.ll_musica_elenco_ogg li a')):
         record = {
             'id' : '{:s}-{:02d}'.format(book_id, idx),
@@ -66,9 +63,7 @@ def parse_scheda_opera(book_id, author_id, url):
             'url' : item.attrib['href'],
             }
  
-    #completa tabella opere
     record = {'id' : book_id, 'autore_id' : author_id, 'url' : url}
-    # autore non lo prendiamo, è negli argomenti
     headers = [u'titolo',
             u'sottotitolo',
             u'titolo per ordinamento',
@@ -106,14 +101,14 @@ def parse_scheda_opera(book_id, author_id, url):
 def make_bisac(book_id, bisac):
     try:
         bisac_id = scraperwiki.sql.select('id as n FROM bisac WHERE bisac IS "' + bisac + '"')
-        if not bisac_id: # non esiste entry in bisac dobbiamo crearla
+        if not bisac_id:
             bisac_id = scraperwiki.sql.select('COUNT(id) as n FROM bisac')
             record = {
                 'id' : bisac_id[0]['n'],
                 'bisac' : bisac
             }
             scraperwiki.sql.save(unique_keys=['id'], data=record, table_name='bisac')
-        # ora creiamo associazione in rel_bisac_opere
+            
         rel_id = scraperwiki.sql.select('COUNT(id) as n FROM rel_bisac_opere')
         record = {
             'id' : rel_id[0]['n'],
@@ -121,9 +116,7 @@ def make_bisac(book_id, bisac):
             'opera_id' : book_id,
         }
         scraperwiki.sql.save(unique_keys=['id'], data=record, table_name='rel_bisac_opere')
-    except: # non esiste tabella bisac
-    # sarebbe carino intercettare solo
-    # sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) no such table: bisac
+    except:
         scraperwiki.sql.save(unique_keys=['id'], data={'id':0,'bisac':bisac}, table_name='bisac')
         record = {
             'id' : 0,
@@ -144,7 +137,7 @@ def build_file():
         WHERE "titolo per ordinamento" IS NULL OR "titolo per ordinamento" = ""')
     for i in books: parse_scheda_opera(i['id'], i['autore_id'], i['url'])
 
-build_autori('CDEFGHIJKLMNOPQRSTUVWXYZ')
+build_autori()
 build_opere()
 build_file()
 
