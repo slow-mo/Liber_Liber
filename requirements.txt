@@ -6,5 +6,5 @@
 #-e git+http://github.com/openaustralia/scraperwiki-python.git@morph_defaults#egg=scraperwiki
 
 scraperwiki==0.5.1
-lxml==4.7.1
+lxml==4.9.1
 beautifulsoup4==4.9.0
